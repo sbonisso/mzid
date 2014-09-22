@@ -1,4 +1,5 @@
 require 'nokogiri'
+require 'progressbar'
 
 module MzID
   #
@@ -20,27 +21,41 @@ module MzID
         root = doc.root
         peptide_lst = root.xpath('//Peptide')
         @pep_h = Hash.new
+        @mod_h = Hash.new
         peptide_lst.each do |pnode|
           
           pseq = pnode.xpath('.//PeptideSequence')
-
+          mods = pnode.xpath('.//Modification')
+          # parse the peptide sequence
           id = pnode['id']
           seq = pseq[0].content
           @pep_h[id] = seq
+          # parse any modifications 
+          mods.each do |mod|
+            loc = mod['location'].to_i-1
+            delta_mass = mod['monoisotopicMassDelta'].to_f
+            if @mod_h.has_key?(id) then 
+              @mod_h[id].merge!( loc => delta_mass )
+            else
+              @mod_h[id] = {mod['location'].to_i-1 => delta_mass}
+            end
+          end
+          
         end
-        #puts "#{@pep_h.size} PEPS"            
+        #puts "#{@pep_h.size} PEPS"    
       end
     end
     #
     # iterate through each psm
     #
-    def each_psm()
+    def each_psm(use_pbar=nil)
       hit_values = File.open(@mzid_file) do |io|
         doc = Nokogiri::XML.parse(io, nil, nil, Nokogiri::XML::ParseOptions::DEFAULT_XML | Nokogiri::XML::ParseOptions::NOBLANKS | Nokogiri::XML::ParseOptions::STRICT)
         doc.remove_namespaces!
         root = doc.root
         # get list of identifications
         spec_results = root.xpath('//SpectrumIdentificationResult')
+        pbar = ProgressBar.new("PSMs", spec_results.size) if use_pbar
         #puts "SPEC RESULTS:\t#{spec_results.size}"
         spec_results.each do |sres|
           # 
@@ -60,27 +75,33 @@ module MzID
             spec_num = spec_id.split("_")[1].to_i
             spec_ref = spec_id.split("_")[-1].to_i
             # store in object
-            psm = PSM.new(:spec_num => spec_num, :spec_ref => spec_ref, :pep => pep_seq, :spec_prob => spec_prob.to_f)
+            psm = PSM.new(:spec_num => spec_num, 
+                          :spec_ref => spec_ref, 
+                          :pep => pep_seq, 
+                          :spec_prob => spec_prob.to_f,
+                          :mods => (@mod_h.has_key?(psm_node['peptide_ref']) ? @mod_h[psm_node['peptide_ref']] : nil))
             # yield psm object
             yield psm
           end
+          pbar.inc if use_pbar
         end
+        pbar.finish if use_pbar
       end
     end
     #
     # for each spectrum, return a list of PSM objects for that spectrum
     #
-    def each_spectrum()
+    def each_spectrum(use_pbar=nil)
       spec_lst = []
-      self.each_psm do |psm|
+      self.each_psm(use_pbar) do |psm|
         if spec_lst.empty? then
           spec_lst.push(psm) 
         else
           if spec_lst[-1].get_spec_num == psm.get_spec_num then
             spec_lst.push(psm)
-          else
+          else # found new spec num, yield psm list
             yield spec_lst
-            spec_lst = [psm]
+            spec_lst = [psm] # add new to list
           end
         end
       end

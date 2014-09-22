@@ -53,17 +53,40 @@ module MzID
             # find spectral prob
             tmp_lst = cvlst.select{|v| v['name'] == "MS-GF:SpecEValue"}
             spec_prob = tmp_lst[0]['value']
-            # get id/peptide
-            spec_id = psm_node['id']
+            # get peptide
             pep_seq = @pep_h[psm_node['peptide_ref']]
+            # get spectrum id/ref number
+            spec_id = psm_node['id']
+            spec_num = spec_id.split("_")[1].to_i
+            spec_ref = spec_id.split("_")[-1].to_i
             # store in object
-            psm = PSM.new(:id => spec_id, :pep => pep_seq, :spec_prob => spec_prob)
+            psm = PSM.new(:spec_num => spec_num, :spec_ref => spec_ref, :pep => pep_seq, :spec_prob => spec_prob.to_f)
             # yield psm object
             yield psm
           end
         end
       end
     end
+    #
+    # for each spectrum, return a list of PSM objects for that spectrum
+    #
+    def each_spectrum()
+      spec_lst = []
+      self.each_psm do |psm|
+        if spec_lst.empty? then
+          spec_lst.push(psm) 
+        else
+          if spec_lst[-1].get_spec_num == psm.get_spec_num then
+            spec_lst.push(psm)
+          else
+            yield spec_lst
+            spec_lst = [psm]
+          end
+        end
+      end
+      yield spec_lst
+    end
+    
     
     private :cache_ids
     

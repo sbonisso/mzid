@@ -13,4 +13,5 @@ s.require_paths = ['lib']
 s.homepage = 'https://github.com/sbonisso/mzid'
 s.license = 'MIT'
 s.add_dependency 'nokogiri'
+s.add_dependency 'progressbar'
 end

@@ -56,7 +56,6 @@ module MzID
         # get list of identifications
         spec_results = root.xpath('//SpectrumIdentificationResult')
         pbar = ProgressBar.new("PSMs", spec_results.size) if use_pbar
-        #puts "SPEC RESULTS:\t#{spec_results.size}"
         spec_results.each do |sres|
           # 
           psms_of_spec = sres.xpath('.//SpectrumIdentificationItem')

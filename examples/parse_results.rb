@@ -7,6 +7,8 @@
 # * distribution of number of mods
 #
 
+$LOAD_PATH.unshift("#{File.dirname(__FILE__)}/../lib/")
+
 require 'mzid'
 
 if !(ARGV[0] =~ /\.mzid$/) then
@@ -14,7 +16,8 @@ if !(ARGV[0] =~ /\.mzid$/) then
   Process.exit(0)
 end
 
-parser = MzID::Parser.new(ARGV[0])
+#parser = MzID::Parser.new(ARGV[0])
+parser = MzID::ParserEfficient.new(ARGV[0])
 
 pep_per_spec = []
 spec_counts = Hash.new

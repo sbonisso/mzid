@@ -16,8 +16,8 @@ if !(ARGV[0] =~ /\.mzid$/) then
   Process.exit(0)
 end
 
-#parser = MzID::Parser.new(ARGV[0])
-parser = MzID::ParserEfficient.new(ARGV[0])
+#parser = MzID::BatchParser.new(ARGV[0])
+parser = MzID::StreamingParser.new(ARGV[0])
 
 pep_per_spec = []
 spec_counts = Hash.new

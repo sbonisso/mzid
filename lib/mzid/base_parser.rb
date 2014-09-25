@@ -1,6 +1,5 @@
 require 'nokogiri'
 require 'progressbar'
-require 'mzid/parser'
 
 module MzID
   #

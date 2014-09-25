@@ -109,7 +109,8 @@ module MzID
     
     
     private :cache_ids
-    
+    attr_accessor :mod_h
+
   end
 
 end

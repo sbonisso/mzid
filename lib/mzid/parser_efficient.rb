@@ -6,7 +6,7 @@ module MzID
   #
   # class to parse an mzIdentML file
   #
-  class ParserEfficient < Parser
+  class StreamingParser < BaseParser
     
     def initialize(file)
       @num_spec = 0

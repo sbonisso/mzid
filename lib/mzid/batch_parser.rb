@@ -1,6 +1,7 @@
 require 'nokogiri'
 require 'progressbar'
 require 'mzid/base_parser'
+require 'mzid/peptide_evidence'
 
 module MzID
   #
@@ -10,6 +11,8 @@ module MzID
     
     def initialize(file)
       super(file)
+      @pep_ev_h = Hash.new
+      @db_seq_h = Hash.new
       cache_ids
     end
     #
@@ -20,6 +23,10 @@ module MzID
         doc = Nokogiri::XML.parse(io, nil, nil, Nokogiri::XML::ParseOptions::DEFAULT_XML | Nokogiri::XML::ParseOptions::NOBLANKS | Nokogiri::XML::ParseOptions::STRICT)
         doc.remove_namespaces!
         root = doc.root
+        
+        cache_db_seq_entries(root)
+        cache_pep_ev(root)
+        
         peptide_lst = root.xpath('//Peptide')
         @pep_h = Hash.new
         @mod_h = Hash.new
@@ -30,27 +37,40 @@ module MzID
           mod_line = get_modifications(pnode)
           @pep_h[pep_id] = pep_seq 
           @mod_h[pep_id] = mod_line 
-          
-          # pseq = pnode.xpath('.//PeptideSequence')
-          # mods = pnode.xpath('.//Modification')
-          # # parse the peptide sequence
-          # id = pnode['id']
-          # seq = pseq[0].content
-          # @pep_h[id] = seq
-          # # parse any modifications 
-          # mods.each do |mod|
-          #   loc = mod['location'].to_i-1
-          #   delta_mass = mod['monoisotopicMassDelta'].to_f
-          #   if @mod_h.has_key?(id) then 
-          #     @mod_h[id].merge!( loc => delta_mass )
-          #   else
-          #     @mod_h[id] = {mod['location'].to_i-1 => delta_mass}
-          #   end
-          # end
-          
         end
+        
       end
     end
+    #
+    # store peptide evidence sequences in hash for lookup
+    #
+    def cache_pep_ev(root)
+      pep_ev_lst = root.xpath('//PeptideEvidence')
+      pep_ev_lst.each do |pnode|
+        id = pnode["id"]
+        
+        @pep_ev_h[id] = 
+          PeptideEvidence.new(:id => pnode["id"],
+                              :db_seq_ref => pnode["dBSequence_ref"],
+                              :pep_id => pnode["peptide_ref"],
+                              :start_pos => pnode["start"],
+                              :end_pos => pnode["end"],
+                              :pre => pnode["pre"],
+                              :post => pnode["post"],
+                              :prot_id => @db_seq_h[pnode["dBSequence_ref"]])
+      end
+    end
+    #
+    # store database sequence entries (ids) 
+    #
+    def cache_db_seq_entries(root)
+      dbseq_lst = root.xpath('//DBSequence')
+      dbseq_lst.each do |dnode|
+        id = dnode["id"]
+        acc_id = dnode["accession"]
+        @db_seq_h[id] = acc_id
+      end
+    end 
     #
     # iterate through each psm
     #
@@ -67,7 +87,12 @@ module MzID
           psms_of_spec = sres.xpath('.//SpectrumIdentificationItem')
           # go over each PSM from the spectra
           psms_of_spec.each do |psm_node|
-            #puts psm_node.to_s
+            # get peptide evidence list
+            pep_ev_raw_lst = psm_node.xpath('.//PeptideEvidenceRef')
+            pep_ev_lst = pep_ev_raw_lst.map do |penode|
+              pep_ev_ref_id = penode["peptideEvidence_ref"]
+              @pep_ev_h[pep_ev_ref_id]
+            end 
             # get cvparams
             cvlst = psm_node.xpath('.//cvParam')
             # find spectral prob
@@ -84,7 +109,9 @@ module MzID
                           :spec_ref => spec_ref, 
                           :pep => pep_seq, 
                           :spec_prob => spec_prob.to_f,
-                          :mods => (@mod_h.has_key?(psm_node['peptide_ref']) ? @mod_h[psm_node['peptide_ref']] : nil))
+                          :mods => (@mod_h.has_key?(psm_node['peptide_ref']) ? @mod_h[psm_node['peptide_ref']] : nil),
+                          :pep_ev => pep_ev_lst
+                          )
             # yield psm object
             yield psm
           end

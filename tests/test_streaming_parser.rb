@@ -68,5 +68,19 @@ class TestStreamingParser < MiniTest::Test
       i += 1
     end
   end
+  #
+  # unit test for peptide evidence, checking protein ids
+  #
+  def test_peptide_evidence()
+    exp_prot_id_lst = ["sp|Q9RXK5|EFG_DEIRA"]
+    infile = "#{File.dirname(__FILE__)}/data/example.mzid"
+    p1 = MzID::StreamingParser.new(infile)
+    i = 0
+    p1.each_psm do |psm|
+      prot_id_lst = psm.get_pep_ev.map{|pep_ev| pep_ev.get_prot_id}
+      assert_equal(exp_prot_id_lst[i], prot_id_lst[i], "protein IDs not what expected")
+      i += 1
+    end
+  end
   
 end

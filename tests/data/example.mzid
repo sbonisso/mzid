@@ -13,9 +13,13 @@
     </AnalysisSoftware>
 </AnalysisSoftwareList>
 <SequenceCollection>
+  <DBSequence accession="sp|Q9RXK5|EFG_DEIRA" searchDatabase_ref="SearchDB_1" length="698" id="DBSeq30696">
+        <cvParam accession="MS:1001088" cvRef="PSI-MS" value="sp|Q9RXK5|EFG_DEIRA Elongation factor G OS=Deinococcus radiodurans GN=fusA PE=3 SV=1" name="protein description"/>
+    </DBSequence>
 <Peptide id="Pep1">
         <PeptideSequence>VVIYDGSYHEVDSSEMAFK</PeptideSequence>
     </Peptide>
+<PeptideEvidence isDecoy="false" post="I" pre="K" end="591" start="573" peptide_ref="Pep1" dBSequence_ref="DBSeq30696" id="PepEv_31268_1_573"/>
 </SequenceCollection>
 <AnalysisCollection xmlns="http://psidev.info/psi/pi/mzIdentML/1.1">
     <SpectrumIdentification spectrumIdentificationList_ref="SI_LIST_1" spectrumIdentificationProtocol_ref="SearchProtocol_1" id="SpecIdent_1">

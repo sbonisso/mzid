@@ -38,6 +38,23 @@ module MzID
           @pep_h[pep_id] = pep_seq 
           @mod_h[pep_id] = mod_line 
         end
+        #
+        if node.name == "DBSequence" then
+          # parse local DBSequence entry
+          tmp_node = Nokogiri::XML.parse(node.outer_xml)
+          tmp_node.remove_namespaces!
+          root = tmp_node.root
+          cache_db_seq_entries(root)
+        end
+        #
+        if node.name == "PeptideEvidence" then
+          # parse local DBSequence entry
+          tmp_node = Nokogiri::XML.parse(node.outer_xml)
+          tmp_node.remove_namespaces!
+          root = tmp_node.root
+          cache_pep_ev(root)
+        end 
+
       end
     end
     #
@@ -55,6 +72,12 @@ module MzID
         # parse spectrum id item
         psms_of_spec = root.xpath('.//SpectrumIdentificationItem')
         psms_of_spec.each do |psm_node|
+          # get peptide evidence list
+          pep_ev_raw_lst = psm_node.xpath('.//PeptideEvidenceRef')
+          pep_ev_lst = pep_ev_raw_lst.map do |penode|
+            pep_ev_ref_id = penode["peptideEvidence_ref"]
+            @pep_ev_h[pep_ev_ref_id]
+          end 
           # get cvparams
           cvlst = psm_node.xpath('.//cvParam')
           # find spectral prob
@@ -71,7 +94,8 @@ module MzID
                         :spec_ref => spec_ref, 
                         :pep => pep_seq, 
                         :spec_prob => spec_prob.to_f,
-                        :mods => (@mod_h.has_key?(psm_node['peptide_ref']) ? @mod_h[psm_node['peptide_ref']] : nil))
+                        :mods => (@mod_h.has_key?(psm_node['peptide_ref']) ? @mod_h[psm_node['peptide_ref']] : nil),
+                        :pep_ev => pep_ev_lst)
           # yield psm object
           yield psm
         end

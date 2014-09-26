@@ -13,6 +13,7 @@ module MzID
       @spec_ref = h.has_key?(:spec_ref) ? h[:spec_ref] : nil
       @spec_num = h.has_key?(:spec_num) ? h[:spec_num] : nil
       @mods = h.has_key?(:mods) ? h[:mods] : nil
+      @pep_evidence = h.has_key?(:pep_ev) ? h[:pep_ev] : nil
     end
     #
     # get methods
@@ -24,11 +25,10 @@ module MzID
     def get_spec_ref() @spec_ref end
     def get_spec_num() @spec_num end
     def get_mods() @mods end
+    def get_pep_ev() @pep_evidence end
     #
     # output PSM as string
     #
-    #def to_s() "[#{@id}; Pep: #{@pep}; SpecProb: #{@spec_prob}]" end
-    #def to_s() "[#{@spec_num}; Pep: #{@pep}; SpecProb: #{@spec_prob}]" end
     def to_s() "[#{@spec_num}; Pep: #{@pep}; SpecProb: #{@spec_prob}; Mods #{@mods.to_s}]" end
   end
 

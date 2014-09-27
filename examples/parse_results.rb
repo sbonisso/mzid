@@ -35,7 +35,8 @@ CSV.open("result.csv", "w", {:col_sep => "\t"}) do |csv|
       csv << [psm.get_spec_num,
               psm.get_pep, 
               psm.get_spec_prob, 
-              psm.get_pep_ev.map{|pep_ev| pep_ev.get_prot_id}.uniq.join(";")
+              #psm.get_pep_ev.map{|pep_ev| pep_ev.get_prot_id}.uniq.join(";")
+              psm.get_pep_ev.join(";")
              ]
       
       # count spectra per pep

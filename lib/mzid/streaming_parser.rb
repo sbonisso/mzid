@@ -78,6 +78,25 @@ module MzID
       end
       pbar.finish if use_pbar
     end
+     #
+    # store peptide evidence sequences in hash for lookup
+    #
+    def cache_pep_ev(root)
+      pep_ev_lst = root.xpath('//PeptideEvidence')
+      pep_ev_lst.each do |pnode|
+        id = pnode["id"]
+        # @pep_ev_h[id] = 
+        #   PeptideEvidence.new(#:id => pnode["id"],
+        #                       :db_seq_ref => pnode["dBSequence_ref"],
+        #                       #:pep_id => pnode["peptide_ref"],
+        #                       #:start_pos => pnode["start"],
+        #                       #:end_pos => pnode["end"],
+        #                       #:pre => pnode["pre"],
+        #                       #:post => pnode["post"],
+        #                       :prot_id => @db_seq_h[pnode["dBSequence_ref"]])
+        @pep_ev_h[id] = pnode["dBSequence_ref"]
+      end
+    end
     #
     # iterate through each psm
     #
@@ -97,7 +116,7 @@ module MzID
           pep_ev_raw_lst = psm_node.xpath('.//PeptideEvidenceRef')
           pep_ev_lst = pep_ev_raw_lst.map do |penode|
             pep_ev_ref_id = penode["peptideEvidence_ref"]
-            @pep_ev_h[pep_ev_ref_id]
+            @db_seq_h[@pep_ev_h[pep_ev_ref_id]]
           end 
           # get cvparams
           cvlst = psm_node.xpath('.//cvParam')

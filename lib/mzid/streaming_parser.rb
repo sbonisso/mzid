@@ -16,12 +16,29 @@ module MzID
     #
     # store peptide sequences in hash for lookup
     #
-    def cache_ids()
+    def cache_ids(use_pbar = true)
+      num_pep = 0
+      num_db_seq = 0
+      num_pep_ev = 0
+      # once through file to count
+      tmp_reader = Nokogiri::XML::Reader(File.open(@mzid_file))
+      tmp_reader.each do |node|
+        @num_spec += 1 if node.name == "SpectrumIdentificationResult"
+        num_pep += 1 if node.name == "Peptide"
+        num_db_seq += 1 if node.name == "DBSequence"
+        num_pep_ev += 1 if node.name == "PeptideEvidence"
+      end
+      puts "SPEC:\t#{@num_spec}"
+      puts "PEP:\t#{num_pep}"
+      puts "DB:\t#{num_db_seq}"
+      puts "PEPEV:\t#{num_pep_ev}"
+
       @pep_h = Hash.new
       @mod_h = Hash.new
+      pbar = ProgressBar.new("Caching", num_pep+num_db_seq+num_pep_ev) if use_pbar
       reader = Nokogiri::XML::Reader(File.open(@mzid_file))
       reader.each do |node|
-        @num_spec += 1 if node.name == "SpectrumIdentificationResult"
+        # @num_spec += 1 if node.name == "SpectrumIdentificationResult"
         
         if node.name == "Peptide" then
           # parse local peptide entry
@@ -37,6 +54,7 @@ module MzID
           mod_line = get_modifications(root)
           @pep_h[pep_id] = pep_seq 
           @mod_h[pep_id] = mod_line 
+          pbar.inc if use_pbar
         end
         #
         if node.name == "DBSequence" then
@@ -45,6 +63,7 @@ module MzID
           tmp_node.remove_namespaces!
           root = tmp_node.root
           cache_db_seq_entries(root)
+          pbar.inc if use_pbar
         end
         #
         if node.name == "PeptideEvidence" then
@@ -53,9 +72,11 @@ module MzID
           tmp_node.remove_namespaces!
           root = tmp_node.root
           cache_pep_ev(root)
+          pbar.inc if use_pbar
         end 
 
       end
+      pbar.finish if use_pbar
     end
     #
     # iterate through each psm

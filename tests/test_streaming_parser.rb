@@ -77,11 +77,12 @@ class TestStreamingParser < MiniTest::Test
     p1 = MzID::StreamingParser.new(infile)
     i = 0
     p1.each_psm do |psm|
-      #prot_id_lst = psm.get_pep_ev.map{|pep_ev| pep_ev.get_prot_id}
-      prot_id_lst = psm.get_pep_ev
+      prot_id_lst = psm.get_pep_ev.map{|pep_ev| pep_ev.get_prot_id.to_s} # if use PeptideEvidence object
+      #prot_id_lst = psm.get_pep_ev  # if use simple hash of prot ID
       assert_equal(exp_prot_id_lst[i], prot_id_lst[i], "protein IDs not what expected")
       i += 1
     end
+    puts `ps -o rss -p #{$$}`.strip.split.last.to_i * 1024
   end
   
 end

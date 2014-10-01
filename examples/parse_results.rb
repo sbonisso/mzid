@@ -18,13 +18,13 @@ if !(ARGV[0] =~ /\.mzid$/) then
 end
 
 #parser = MzID::BatchParser.new(ARGV[0])
-parser = MzID::StreamingParser.new(ARGV[0])
+parser = MzID::StreamingParser.new(ARGV[0], true)
 
 pep_per_spec = []
 spec_counts = Hash.new
 pep_mod_count = []
 
-CSV.open("result.csv", "w", {:col_sep => "\t"}) do |csv|
+CSV.open("result2.csv", "w", {:col_sep => "\t"}) do |csv|
   csv << ["spec_num", "peptide", "spec_prob", "prot_ids"]
   parser.each_spectrum(true) do |psm_lst|
 
@@ -35,8 +35,8 @@ CSV.open("result.csv", "w", {:col_sep => "\t"}) do |csv|
       csv << [psm.get_spec_num,
               psm.get_pep, 
               psm.get_spec_prob, 
-              #psm.get_pep_ev.map{|pep_ev| pep_ev.get_prot_id}.uniq.join(";")
-              psm.get_pep_ev.join(";")
+              psm.get_pep_ev.map{|pep_ev| pep_ev.get_prot_id}.uniq.join(";")
+              #psm.get_pep_ev.join(";")
              ]
       
       # count spectra per pep

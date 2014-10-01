@@ -79,23 +79,23 @@ module MzID
       end
       pbar.finish if use_pbar
     end
-     #
+    #
     # store peptide evidence sequences in hash for lookup
     #
     def cache_pep_ev(root)
       pep_ev_lst = root.xpath('//PeptideEvidence')
       pep_ev_lst.each do |pnode|
         id = pnode["id"]
-        # @pep_ev_h[id] = 
-        #   PeptideEvidence.new(#:id => pnode["id"],
-        #                       :db_seq_ref => pnode["dBSequence_ref"],
-        #                       #:pep_id => pnode["peptide_ref"],
-        #                       #:start_pos => pnode["start"],
-        #                       #:end_pos => pnode["end"],
-        #                       #:pre => pnode["pre"],
-        #                       #:post => pnode["post"],
-        #                       :prot_id => @db_seq_h[pnode["dBSequence_ref"]])
-        @pep_ev_h[id] = pnode["dBSequence_ref"]
+        @pep_ev_h[id] = 
+          PeptideEvidence.new(#:id => pnode["id"],
+                              :db_seq_ref => pnode["dBSequence_ref"],
+                              #:pep_id => pnode["peptide_ref"],
+                              :start_pos => pnode["start"].to_i,
+                              :end_pos => pnode["end"].to_i,
+                              #:pre => pnode["pre"],
+                              #:post => pnode["post"],
+                              :prot_id => @db_seq_h[pnode["dBSequence_ref"]].to_sym)
+        # @pep_ev_h[id] = pnode["dBSequence_ref"]
       end
     end
     #
@@ -113,30 +113,7 @@ module MzID
         # parse spectrum id item
         psms_of_spec = root.xpath('.//SpectrumIdentificationItem')
         psms_of_spec.each do |psm_node|
-          # # get peptide evidence list
-          # pep_ev_raw_lst = psm_node.xpath('.//PeptideEvidenceRef')
-          # pep_ev_lst = pep_ev_raw_lst.map do |penode|
-          #   pep_ev_ref_id = penode["peptideEvidence_ref"]
-          #   @db_seq_h[@pep_ev_h[pep_ev_ref_id]]
-          # end 
-          # # get cvparams
-          # cvlst = psm_node.xpath('.//cvParam')
-          # # find spectral prob
-          # tmp_lst = cvlst.select{|v| v['name'] == "MS-GF:SpecEValue"}
-          # spec_prob = tmp_lst[0]['value']
-          # # get peptide
-          # pep_seq = @pep_h[psm_node['peptide_ref']]
-          # # get spectrum id/ref number
-          # spec_id = psm_node['id']
-          # spec_num = spec_id.split("_")[1].to_i
-          # spec_ref = spec_id.split("_")[-1].to_i
-          # # store in object
-          # psm = PSM.new(:spec_num => spec_num, 
-          #               :spec_ref => spec_ref, 
-          #               :pep => pep_seq, 
-          #               :spec_prob => spec_prob.to_f,
-          #               :mods => (@mod_h.has_key?(psm_node['peptide_ref']) ? @mod_h[psm_node['peptide_ref']] : nil),
-          #               :pep_ev => pep_ev_lst)
+          # get PSM object
           psm = get_psm(psm_node)
           # yield psm object
           yield psm
@@ -153,7 +130,8 @@ module MzID
       pep_ev_raw_lst = psm_node.xpath('.//PeptideEvidenceRef')
       pep_ev_lst = pep_ev_raw_lst.map do |penode|
         pep_ev_ref_id = penode["peptideEvidence_ref"]
-        @db_seq_h[@pep_ev_h[pep_ev_ref_id]]
+        #@db_seq_h[@pep_ev_h[pep_ev_ref_id]]  # if use simpler hash of prot ID
+        @pep_ev_h[pep_ev_ref_id]  # if use PeptideEvidence object
       end 
       # get cvparams
       cvlst = psm_node.xpath('.//cvParam')

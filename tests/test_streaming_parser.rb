@@ -81,8 +81,7 @@ class TestStreamingParser < MiniTest::Test
       #prot_id_lst = psm.get_pep_ev  # if use simple hash of prot ID
       assert_equal(exp_prot_id_lst[i], prot_id_lst[i], "protein IDs not what expected")
       i += 1
-    end
-    puts `ps -o rss -p #{$$}`.strip.split.last.to_i * 1024
+    end    
   end
   
 end

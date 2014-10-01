@@ -53,11 +53,11 @@ module MzID
           PeptideEvidence.new(:id => pnode["id"],
                               :db_seq_ref => pnode["dBSequence_ref"],
                               :pep_id => pnode["peptide_ref"],
-                              :start_pos => pnode["start"],
-                              :end_pos => pnode["end"],
+                              :start_pos => pnode["start"].to_i,
+                              :end_pos => pnode["end"].to_i,
                               :pre => pnode["pre"],
                               :post => pnode["post"],
-                              :prot_id => @db_seq_h[pnode["dBSequence_ref"]])
+                              :prot_id => @db_seq_h[pnode["dBSequence_ref"]].to_sym)
       end
     end
     #

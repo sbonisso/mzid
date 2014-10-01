@@ -77,7 +77,7 @@ class TestBatchParser < MiniTest::Test
     p1 = MzID::BatchParser.new(infile)
     i = 0
     p1.each_psm do |psm|
-      prot_id_lst = psm.get_pep_ev.map{|pep_ev| pep_ev.get_prot_id}
+      prot_id_lst = psm.get_pep_ev.map{|pep_ev| pep_ev.get_prot_id.to_s}
       assert_equal(exp_prot_id_lst[i], prot_id_lst[i], "protein IDs not what expected")
       i += 1
     end

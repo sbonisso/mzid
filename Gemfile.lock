@@ -13,6 +13,7 @@ GEM
     nokogiri (1.6.3.1)
       mini_portile (= 0.6.0)
     progressbar (0.21.0)
+    rake (10.1.0)
     ruby-progressbar (1.6.0)
 
 PLATFORMS
@@ -23,3 +24,4 @@ DEPENDENCIES
   minitest-reporters (~> 1.0)
   nokogiri
   progressbar (~> 0.21)
+  rake

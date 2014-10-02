@@ -26,6 +26,12 @@ parser.each_psm do |spec_id|
 end
 ```
 
+alternatively, one can also specify a more memory-efficient parser for large files:
+
+```ruby
+parser = MzID::StreamingParser("output.mzid")
+```
+
 ###### Dependencies
 * nokogiri
 * progressbar

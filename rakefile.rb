@@ -6,4 +6,3 @@ task :unit_tests do
 end
 
 task :default => :unit_tests
-

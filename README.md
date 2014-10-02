@@ -3,6 +3,8 @@ mzid
 
 ruby parser library for mzIdentML files
 
+[![Build Status](https://travis-ci.org/sbonisso/mzid.png)](http://travis-ci.org/sbonisso/mzid)
+
 ###### Install
 
 ``` ruby

@@ -33,10 +33,13 @@ end
 #   Process.exit(0)
 # end
 
+require 'ruby-prof'
+
 
 parser = MzID::FilteredStreamingParser.new(ARGV[0], 10**-10, true)
 #parser.each_spectrum do |psm_lst|
-  
+
+#RubyProf.start  
 CSV.open("result.csv", "w", {:col_sep => "\t"}) do |csv|
   csv << ["spec_num", "peptide", "spec_prob", "prot_ids"]
 
@@ -56,9 +59,6 @@ CSV.open("result.csv", "w", {:col_sep => "\t"}) do |csv|
   
 end
 
-#end
-
-#puts MemoryProfiler.format(rpt)
-
-#MemoryProfiler.stop_daemon
-
+#result=RubyProf.stop
+#printer = RubyProf::FlatPrinter.new(result)
+#printer.print(STDOUT)

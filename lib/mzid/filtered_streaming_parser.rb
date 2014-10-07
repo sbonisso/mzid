@@ -168,6 +168,31 @@ module MzID
         # @pep_ev_h_endPos[id.to_sym] = pnode["end"].to_i
         @pep_ev_h_dbseqRef[id.to_sym] = pnode["dBSequence_ref"].to_sym
       end
+    end   
+    #
+    # iterate through each psm
+    #
+    def each_psm(use_pbar=@use_pbar)
+      hit_values = File.open(@mzid_file) do |io|
+        doc = Nokogiri::XML.parse(io, nil, nil, Nokogiri::XML::ParseOptions::DEFAULT_XML | Nokogiri::XML::ParseOptions::NOBLANKS | Nokogiri::XML::ParseOptions::STRICT)
+        doc.remove_namespaces!
+        root = doc.root
+        # get list of identifications
+        spec_results = root.xpath('//SpectrumIdentificationResult')
+        pbar = ProgressBar.new("PSMs", spec_results.size) if use_pbar
+        spec_results.each do |sres|
+          # 
+          psms_of_spec = sres.xpath('.//SpectrumIdentificationItem')
+          # go over each PSM from the spectra
+          psms_of_spec.each do |psm_node|
+            psm = get_psm(psm_node)
+            # yield psm object
+            yield psm
+          end
+          pbar.inc if use_pbar
+        end
+        pbar.finish if use_pbar
+      end
     end
     #
     # given a xml node of a psm, return the PSM 

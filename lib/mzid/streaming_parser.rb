@@ -15,9 +15,9 @@ module MzID
       super(file)
     end
     #
-    # store peptide sequences in hash for lookup
+    # first pass thru file just counting element types
     #
-    def cache_ids(use_pbar = @use_pbar)
+    def get_num_elements(use_pbar=@use_pbar)
       num_pep = 0
       num_db_seq = 0
       num_pep_ev = 0
@@ -29,6 +29,24 @@ module MzID
         num_db_seq += 1 if node.name == "DBSequence"
         num_pep_ev += 1 if node.name == "PeptideEvidence"
       end
+      [num_pep, num_db_seq, num_pep_ev]
+    end
+    #
+    # store peptide sequences in hash for lookup
+    #
+    def cache_ids(use_pbar = @use_pbar)
+      # num_pep = 0
+      # num_db_seq = 0
+      # num_pep_ev = 0
+      # # once through file to count
+      # tmp_reader = Nokogiri::XML::Reader(File.open(@mzid_file))
+      # tmp_reader.each do |node|
+      #   @num_spec += 1 if node.name == "SpectrumIdentificationResult"
+      #   num_pep += 1 if node.name == "Peptide"
+      #   num_db_seq += 1 if node.name == "DBSequence"
+      #   num_pep_ev += 1 if node.name == "PeptideEvidence"
+      # end
+      num_pep, num_db_seq, num_pep_ev = get_num_elements(nil)
       # puts "SPEC:\t#{@num_spec}"
       # puts "PEP:\t#{num_pep}"
       # puts "DB:\t#{num_db_seq}"
@@ -153,7 +171,7 @@ module MzID
                     :pep_ev => pep_ev_lst)
     end
     
-    private :get_psm
+    private :get_psm, :get_num_elements
   end
 
 end

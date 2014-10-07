@@ -27,6 +27,14 @@ module MzID
     def get_mods() @mods end
     def get_pep_ev() @pep_evidence end
     #
+    # set methods
+    #
+    def set_pep(pep) @pep = pep end
+    def set_spec_prob(prob) @spec_prob = prob end
+    #def set_pep_ev(pep_ev) @pep_evidence = pep_ev end
+    def add_pep_ev(pep_ev) @pep_evidence.nil? ? @pep_evidence = [pep_ev] : @pep_evidence.push(pep_ev) end
+    def set_pep(pep_seq) @pep = pep_seq end
+    #
     # output PSM as string
     #
     def to_s() "[#{@spec_num}; Pep: #{@pep}; SpecProb: #{@spec_prob}; Mods #{@mods.to_s}]" end

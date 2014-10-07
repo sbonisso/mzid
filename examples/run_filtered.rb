@@ -36,7 +36,8 @@ end
 #require 'ruby-prof'
 
 
-parser = MzID::FilteredStreamingParser.new(ARGV[0], 10**-10, true)
+#parser = MzID::FilteredStreamingParser.new(ARGV[0], 10**-10, true)
+parser = MzID::StreamingParserLines.new(ARGV[0], 10**-10, true)
 #parser.each_spectrum do |psm_lst|
 
 #RubyProf.start  
@@ -47,6 +48,8 @@ CSV.open("result.csv", "w", {:col_sep => "\t"}) do |csv|
     pep_seq = psm.get_pep
     spec_num = psm.get_spec_num
     sp_prob = psm.get_spec_prob
+    #puts psm
+    #Process.exit(0)
     
     psm.get_pep_ev.each do |pepev| 
       prot_id = parser.get_prot_id(pepev) 

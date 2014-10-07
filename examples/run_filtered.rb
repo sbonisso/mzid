@@ -11,7 +11,7 @@ $LOAD_PATH.unshift("#{File.dirname(__FILE__)}/../lib/")
 
 require 'mzid'
 require 'csv'
-require 'memory-profiler'
+#require 'memory-profiler'
 
 if !(ARGV[0] =~ /\.mzid$/) then
   puts "USAGE: #{__FILE__} results.mzid"
@@ -23,7 +23,18 @@ end
 
 #rpt  = MemoryProfiler.start( :limit=>10 ) do
   
-parser = MzID::FilteredStreamingParser.new(ARGV[0], 10**-10, nil)
+
+# parser_s = MzID::BatchParser.new(ARGV[0])
+# parser_s.each_spectrum do |psm_lst|
+  
+#   next if psm_lst.size == 1
+  
+#   puts psm_lst.to_s
+#   Process.exit(0)
+# end
+
+
+parser = MzID::FilteredStreamingParser.new(ARGV[0], 10**-10, true)
 #parser.each_spectrum do |psm_lst|
   
 parser.each_psm do |psm|

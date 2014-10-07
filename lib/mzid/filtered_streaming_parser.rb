@@ -36,11 +36,10 @@ module MzID
       puts "DB:\t#{num_db_seq}"
       puts "PEPEV:\t#{num_pep_ev}"
 
-      pbar1 = ProgressBar.new("Caching psm", num_pep) if use_pbar
-      reader = Nokogiri::XML::Reader(File.open(@mzid_file))
-      reader.each do |node|
-        
-      end
+      #pbar1 = ProgressBar.new("Caching psm", num_pep) if use_pbar
+      #reader = Nokogiri::XML::Reader(File.open(@mzid_file))
+      #reader.each do |node|        
+      #end
 
       t1_pep = Time.now
       @pep_h = Hash.new
@@ -70,32 +69,46 @@ module MzID
       pbar1.finish if use_pbar
       t2_pep = Time.now
       #
-      # pbar2 = ProgressBar.new("Caching db", num_db_seq) if use_pbar
-      # t1_db = Time.now
-      # reader2 = Nokogiri::XML::Reader(File.open(@mzid_file))
-      # reader2.each do |node|
-      #   #
-      #   if node.name == "DBSequence" then
-      #     # parse local DBSequence entry
-      #     tmp_node = Nokogiri::XML.parse(node.outer_xml)
-      #     tmp_node.remove_namespaces!
-      #     root = tmp_node.root
-      #     cache_db_seq_entries(root)
-      #     pbar2.inc if use_pbar
-      #   end
-      #   #
-      #   # if node.name == "PeptideEvidence" then
-      #   #   # parse local DBSequence entry
-      #   #   tmp_node = Nokogiri::XML.parse(node.outer_xml)
-      #   #   tmp_node.remove_namespaces!
-      #   #   root = tmp_node.root
-      #   #   cache_pep_ev(root)
-      #   #   pbar.inc if use_pbar
-      #   # end 
+      pbar2 = ProgressBar.new("Caching db", num_db_seq) if use_pbar
+      t1_db = Time.now
+      reader2 = Nokogiri::XML::Reader(File.open(@mzid_file))
+      reader2.each do |node|
+        #
+        if node.name == "DBSequence" then
+          # parse local DBSequence entry
+          tmp_node = Nokogiri::XML.parse(node.outer_xml)
+          tmp_node.remove_namespaces!
+          root = tmp_node.root
+          cache_db_seq_entries(root)
+          pbar2.inc if use_pbar
+        end
+      end
+      pbar2.finish if use_pbar
 
-      # end
-      # pbar2.finish if use_pbar
-      # t2_db = Time.now
+      pbar3 = ProgressBar.new("Caching pep_ev", num_db_seq) if use_pbar
+      t1_db = Time.now
+      reader3 = Nokogiri::XML::Reader(File.open(@mzid_file))
+      reader3.each do |node|
+        if node.name == "PeptideEvidence" then
+          # parse local DBSequence entry
+          tmp_node = Nokogiri::XML.parse(node.outer_xml)
+          tmp_node.remove_namespaces!
+          root = tmp_node.root
+          cache_pep_ev(root)
+          pbar3.inc if use_pbar
+        end 
+        # if node.name == "PeptideEvidence" then
+        #   tmp_node = Nokogiri::XML.parse(node.outer_xml)
+        #   root = tmp_node.root
+        #   pep_ref = root.to_s.match(/peptide_ref=\"(\w+)\"/)[1]
+        #   id_ref = root.to_s.match(/id=\"(\w+)\"/)[1]
+        #   db_ref = root.to_s.match(/dBSequence_ref=\"(\w+)\"/)[1]
+        #   @pep_ev_h_dbseqRef[id_ref.to_sym] = db_ref.to_sym
+        # end
+      end
+      
+      pbar3.finish if use_pbar
+      t2_db = Time.now
       # puts "TIME:\t#{t2_db-t1_pep}"
       # puts "TIME PER PEP:\t#{(t2_pep-t1_pep)/num_pep}"
       # puts "TIME PER DB:\t#{(t2_db-t1_db)/num_db_seq}"
@@ -130,7 +143,7 @@ module MzID
         #                       #:post => pnode["post"],
         #                       :prot_id => @db_seq_h[pnode["dBSequence_ref"]].to_sym)
         
-        @pep_ev_h_protID[id.to_sym] = @db_seq_h[pnode["dBSequence_ref"]].to_sym
+        # @pep_ev_h_protID[id.to_sym] = @db_seq_h[pnode["dBSequence_ref"]].to_sym
         @pep_ev_h_startPos[id.to_sym] = pnode["start"].to_i,
         @pep_ev_h_endPos[id.to_sym] = pnode["end"].to_i
         @pep_ev_h_dbseqRef[id.to_sym] = pnode["dBSequence_ref"].to_sym

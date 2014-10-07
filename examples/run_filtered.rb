@@ -33,7 +33,7 @@ end
 #   Process.exit(0)
 # end
 
-require 'ruby-prof'
+#require 'ruby-prof'
 
 
 parser = MzID::FilteredStreamingParser.new(ARGV[0], 10**-10, true)

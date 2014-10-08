@@ -2,6 +2,7 @@ require_relative 'load_helper'
 require_relative 'test_helper'
 
 require 'mzid'
+require 'tempfile'
 
 class TestStreamingParserLines < MiniTest::Test
   #

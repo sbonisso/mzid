@@ -142,18 +142,21 @@ module MzID
     #
     def write_to_csv(outfile="result.csv", use_pbar=@use_pbar)
       CSV.open(outfile, "w", {:col_sep => "\t"}) do |csv|
-        csv << ["spec_num", "peptide", "spec_prob", "prot_ids", "start", "end"]
+        csv << ["spec_num", "peptide", "spec_prob", "prot_ids", "start", "end", "num_prot"]
         # each PSM
         self.each_psm do |psm|
           pep_seq = psm.get_pep
           spec_num = psm.get_spec_num
           sp_prob = psm.get_spec_prob
+          pep_ev_ref_lst = psm.get_pep_ev
+          # number of proteins with matching peptide
+          num_prot = pep_ev_ref_lst.size
           # for each PeptideEvidence, write a different line
-          psm.get_pep_ev.each do |pepev| 
+          pep_ev_ref_lst.each do |pepev| 
             prot_id = self.get_prot_id(pepev) 
             start_pos = self.get_pep_start(pepev)
             end_pos = self.get_pep_end(pepev)
-            csv << [spec_num, pep_seq, sp_prob, prot_id, start_pos, end_pos]
+            csv << [spec_num, pep_seq, sp_prob, prot_id, start_pos, end_pos, num_prot]
           end 
         end 
       end

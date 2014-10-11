@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
    s.require_paths = ['lib']
    s.homepage = 'https://github.com/sbonisso/mzid'
    s.license = 'MIT'
+   s.add_runtime_dependency 'ox', '~> 2.0'
    s.add_runtime_dependency 'nokogiri', '~> 1.6'
    s.add_runtime_dependency 'progressbar', ' ~> 0.21'
    s.add_development_dependency 'minitest', '~> 5.4'

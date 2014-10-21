@@ -228,7 +228,7 @@ module MzID
     #
     def write_to_csv(outfile="result.csv", num_spec=nil)
       CSV.open(outfile, "w", {:col_sep => "\t"}) do |csv|
-        csv << ["spec_num", "peptide", "spec_prob", "prot_ids", "start", "end", "num_prot"]
+        csv << ["#spec_num", "peptide", "spec_prob", "prot_ids", "start", "end", "num_prot"]
         
         proc = Proc.new do |spec_h|
           # peptide reference/seq

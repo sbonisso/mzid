@@ -142,7 +142,7 @@ module MzID
     #
     def write_to_csv(outfile="result.csv", use_pbar=@use_pbar)
       CSV.open(outfile, "w", {:col_sep => "\t"}) do |csv|
-        csv << ["spec_num", "peptide", "spec_prob", "prot_ids", "start", "end", "num_prot"]
+        csv << ["#spec_num", "peptide", "spec_prob", "prot_ids", "start", "end", "num_prot"]
         # each PSM
         self.each_psm do |psm|
           pep_seq = psm.get_pep

@@ -76,7 +76,7 @@ class TestStreamingParserLines < MiniTest::Test
     # read in output lines
     lines = IO.readlines(tmp.path)
     # expected
-    exp_out = ["spec_num\tpeptide\tspec_prob\tprot_ids\tstart\tend\tnum_prot\n", "3591\tVVIYDGSYHEVDSSEMAFK\t1.6364497e-26\tsp|Q9RXK5|EFG_DEIRA\t573\t591\t1\n"]
+    exp_out = ["#spec_num\tpeptide\tspec_prob\tprot_ids\tstart\tend\tnum_prot\n", "3591\tVVIYDGSYHEVDSSEMAFK\t1.6364497e-26\tsp|Q9RXK5|EFG_DEIRA\t573\t591\t1\n"]
     # test 
     assert_equal(exp_out, lines, "unexpected output file contents")
   end

@@ -11,8 +11,9 @@ module MzID
   #
   class StreamingParserLines < StreamingParser
     
-    def initialize(file, sp_thresh = 10.0**-10, use_pbar = nil)
+    def initialize(file, sp_thresh = 10.0**-10, use_pbar = nil, tda_flag = true)
       @num_spec = 0
+      @tda_flag = tda_flag
       #
       @pep_ev_h_protID = Hash.new
       @pep_ev_h_startPos = Hash.new
@@ -34,7 +35,7 @@ module MzID
     #
     def get_pep_start(pep_ev_id) @pep_ev_h[pep_ev_id].get_start_pos end
     def get_pep_end(pep_ev_id) @pep_ev_h[pep_ev_id].get_end_pos end
-    
+    def get_is_decoy(pep_ev_id) @pep_ev_h[pep_ev_id].get_is_decoy end
     #attr_accessor :pep_ev_h_dbseqRef
     
     #
@@ -89,10 +90,12 @@ module MzID
         start_pos = line.match(/start=\"(\d+)/)[1].to_i
         end_pos = line.match(/end=\"(\d+)/)[1].to_i
         pep_ev = line.match(/id=\"(\w+)/)[1]
+        is_decoy = line.match(/isDecoy=\"(\w+)\"/)[1]
         # @pep_ev_h_dbseqRef[pep_ev.to_sym] = db_id.to_sym
         @pep_ev_h[pep_ev.to_sym] = PeptideEvidence.new(:db_seq_ref => db_id.to_sym,
                                                        :start_pos => start_pos,
-                                                       :end_pos => end_pos)
+                                                       :end_pos => end_pos,
+                                                       :is_decoy => is_decoy)
         pbar3.inc if use_pbar
       end
       pbar3.finish if use_pbar      
@@ -142,21 +145,28 @@ module MzID
     #
     def write_to_csv(outfile="result.csv", use_pbar=@use_pbar)
       CSV.open(outfile, "w", {:col_sep => "\t"}) do |csv|
-        csv << ["#spec_num", "peptide", "spec_prob", "prot_ids", "start", "end", "num_prot"]
+        headerAry = ["#spec_num", "peptide", "spec_prob", "decoy", "prot_ids", "start", "end", "num_prot"]
+        headerAry.delete("decoy") if !@tda_flag
+        csv << headerAry
+        
         # each PSM
         self.each_psm do |psm|
           pep_seq = psm.get_pep
           spec_num = psm.get_spec_num
           sp_prob = psm.get_spec_prob
+          pass_thresh = psm.get_pass_threshold
           pep_ev_ref_lst = psm.get_pep_ev
           # number of proteins with matching peptide
           num_prot = pep_ev_ref_lst.size
           # for each PeptideEvidence, write a different line
           pep_ev_ref_lst.each do |pepev| 
-            prot_id = self.get_prot_id(pepev) 
+            prot_id = self.get_prot_id(pepev)             
             start_pos = self.get_pep_start(pepev)
             end_pos = self.get_pep_end(pepev)
-            csv << [spec_num, pep_seq, sp_prob, prot_id, start_pos, end_pos, num_prot]
+            is_decoy = self.get_is_decoy(pepev)
+            ary = [spec_num, pep_seq, sp_prob, is_decoy, prot_id, start_pos, end_pos, num_prot]
+            ary.delete_at(3) if !@tda_flag
+            csv << ary
           end 
         end 
       end

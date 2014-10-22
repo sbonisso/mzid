@@ -11,7 +11,7 @@ class TestParserSax < MiniTest::Test
   def test_write_to_csv()
     exp_prot_id_lst = ["sp|Q9RXK5|EFG_DEIRA"]
     infile = "#{File.dirname(__FILE__)}/data/example.mzid"
-    p1 = MzID::ParserSax.new(infile, nil)
+    p1 = MzID::ParserSax.new(infile, nil, false)
     tmp = Tempfile.new("results")
     p1.write_to_csv(tmp.path)
     tmp.close

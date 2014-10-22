@@ -14,6 +14,7 @@ module MzID
       @spec_num = h.has_key?(:spec_num) ? h[:spec_num] : nil
       @mods = h.has_key?(:mods) ? h[:mods] : nil
       @pep_evidence = h.has_key?(:pep_ev) ? h[:pep_ev] : nil
+      @pass_thresh = h.has_key?(:pass_threshold) ? h[:pass_threshold] : nil
     end
     #
     # get methods
@@ -26,6 +27,7 @@ module MzID
     def get_spec_num() @spec_num end
     def get_mods() @mods end
     def get_pep_ev() @pep_evidence end
+    def get_pass_threshold() @pass_thresh end
     #
     # set methods
     #

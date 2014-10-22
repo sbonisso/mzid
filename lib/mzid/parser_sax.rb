@@ -106,7 +106,7 @@ module MzID
     # handler for PeptideEvent elements
     #
     class PeptideEventHandler < Ox::Sax
-      ATTR_MAP = [:post, :pre, :start, :end, :peptide_ref, :dBSequence_ref, :id]
+      ATTR_MAP = [:post, :pre, :start, :end, :peptide_ref, :dBSequence_ref, :id, :isDecoy]
       ATTR = [:PeptideEvidence]
       def initialize(dbseq_h, num_pepev=nil)
         @dbseq_h = dbseq_h
@@ -134,7 +134,8 @@ module MzID
                               :pep_id => @h[:peptide_ref].to_sym,
                               :start_pos => @h[:start],
                               :end_pos => @h[:end],
-                              :prot_id => @dbseq_h[@h[:dBSequence_ref].to_sym])
+                              :prot_id => @dbseq_h[@h[:dBSequence_ref].to_sym],
+                              :is_decoy => @h[:isDecoy])
       end 
 
     end 
@@ -143,7 +144,7 @@ module MzID
     #
     class SpectraIDHandler < Ox::Sax
       ATTR = [:SpectrumIdentificationItem, :PeptideEvidenceRef]  
-      SPEC_ATTR_MAP = [:peptide_ref, :id]
+      SPEC_ATTR_MAP = [:peptide_ref, :id, :passThreshold]
       SPEC_PROB_ATTR_MAP = [:accession, :value]
       SPEC_PROB_ACC = "MS:1002052"  # code for spec-prob
       def initialize(dbseq_h, pep_h, pep_ev_h, block, num_spec=nil)
@@ -188,9 +189,10 @@ module MzID
       end 
     end
     
-    def initialize(file, use_pbar = nil)
+    def initialize(file, use_pbar = nil, tda_flag = true)
       @use_pbar = use_pbar
       @mzid_file = file
+      @tda_flag = tda_flag
       #
       # get counts
       if @use_pbar then
@@ -228,7 +230,9 @@ module MzID
     #
     def write_to_csv(outfile="result.csv", num_spec=nil)
       CSV.open(outfile, "w", {:col_sep => "\t"}) do |csv|
-        csv << ["#spec_num", "peptide", "spec_prob", "prot_ids", "start", "end", "num_prot"]
+        headerAry = ["#spec_num", "peptide", "spec_prob", "decoy", "prot_ids", "start", "end", "num_prot"]
+        headerAry.delete("decoy") if !@tda_flag
+        csv << headerAry
         
         proc = Proc.new do |spec_h|
           # peptide reference/seq
@@ -246,8 +250,12 @@ module MzID
             end_pos = pep_ev.get_end_pos
             # get protein ID
             prot_id = pep_ev.get_prot_id
+            # get decoy flag
+            is_decoy = pep_ev.get_is_decoy
             # write to file
-            csv << [spec_h[:id], pep_seq, spec_h[:spec_prob], prot_id, start_pos, end_pos, num_prot]
+            ary = [spec_h[:id], pep_seq, spec_h[:spec_prob], is_decoy, prot_id, start_pos, end_pos, num_prot]
+            ary.delete_at(3) if !@tda_flag
+            csv << ary
           end 
           
         end

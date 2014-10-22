@@ -69,7 +69,7 @@ class TestStreamingParserLines < MiniTest::Test
   def test_write_to_csv()
     exp_prot_id_lst = ["sp|Q9RXK5|EFG_DEIRA"]
     infile = "#{File.dirname(__FILE__)}/data/example.mzid"
-    p1 = MzID::StreamingParserLines.new(infile)
+    p1 = MzID::StreamingParserLines.new(infile, 0.0, false, false)
     tmp = Tempfile.new("results")
     p1.write_to_csv(tmp.path, nil)
     tmp.close

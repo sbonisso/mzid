@@ -80,5 +80,25 @@ class TestStreamingParserLines < MiniTest::Test
     # test 
     assert_equal(exp_out, lines, "unexpected output file contents")
   end
+  #
+  # test parsing of modifications
+  #
+  def test_modifications()
+    infile = "#{File.dirname(__FILE__)}/data/example_mod.mzid"
+    p1 = MzID::StreamingParserLines.new(infile)
+    mod_locs = [nil, [14,17], nil]
+    mod_vals = [nil, [57.021463735,57.021463735], nil]
+    i = 0
+    p1.each_psm do |psm|
+      modh = psm.get_mods
+      if modh.nil? then
+        assert_equal(mod_locs[i], nil, "expected non-nil mod hash")
+      else
+        assert_equal(mod_locs[i], modh.keys, "expected different locations")
+        assert_equal(mod_vals[i], modh.values, "expected different mass deltas")
+      end
+      i += 1
+    end
+  end
   
 end

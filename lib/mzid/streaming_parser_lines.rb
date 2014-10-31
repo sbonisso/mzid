@@ -126,7 +126,8 @@ module MzID
           pep_ref = line.match(/peptide_ref=\"(\w+)/)[1]
           # get peptide
           pep_seq = @pep_h[pep_ref.to_sym]
-          curr_psm = PSM.new(:spec_num => spec_num, :pep => pep_seq)
+          mods = @mod_h[pep_ref.to_sym]
+          curr_psm = PSM.new(:spec_num => spec_num, :pep => pep_seq, :mods => mods)
         elsif pepevref_re.match(line) then
           pep_ev = line.match(/peptideEvidence_ref=\"(\w+)/)[1]
           curr_psm.add_pep_ev(pep_ev.to_sym) if curr_psm

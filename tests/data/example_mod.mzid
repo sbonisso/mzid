@@ -13,21 +13,33 @@
     </AnalysisSoftware>
 </AnalysisSoftwareList>
 <SequenceCollection>
-<Peptide id="Pep1">
-        <PeptideSequence>VVIYDGSYHEVDSSEMAFK</PeptideSequence>
-</Peptide>
- <Peptide id="Pep3181">
-        <PeptideSequence>RFQIGEVVLEGTGECHPCSR</PeptideSequence>
-        <Modification monoisotopicMassDelta="57.021463735" location="15">
-            <cvParam accession="UNIMOD:4" cvRef="UNIMOD" name="Carbamidomethyl"/>
-        </Modification>
-        <Modification monoisotopicMassDelta="57.021463735" location="18">
-            <cvParam accession="UNIMOD:4" cvRef="UNIMOD" name="Carbamidomethyl"/>
-        </Modification>
-    </Peptide>
-     <Peptide id="Pep3182">
-        <PeptideSequence>FFHWEGRERHEFGFFFR</PeptideSequence>
-    </Peptide>
+  <DBSequence accession="sp|Q9RXK5|EFG_DEIRA" searchDatabase_ref="SearchDB_1" length="698" id="DBSeq30696">
+    <cvParam accession="MS:1001088" cvRef="PSI-MS" value="sp|Q9RXK5|EFG_DEIRA Elongation factor G OS=Deinococcus radiodurans GN=fusA PE=3 SV=1" name="protein description"/>
+  </DBSequence>
+  <DBSequence accession="tr|Q9RXN7|Q9RXN7_DEIRA" searchDatabase_ref="SearchDB_1" length="193" id="DBSeq658964">
+    <cvParam accession="MS:1001088" cvRef="PSI-MS" value="tr|Q9RXN7|Q9RXN7_DEIRA Putative uncharacterized protein OS=Deinococcus radiodurans GN=DR_0273 PE=4 SV=1" name="protein description"/>
+  </DBSequence>
+  <DBSequence accession="tr|Q9RS55|Q9RS55_DEIRA" searchDatabase_ref="SearchDB_1" length="172" id="DBSeq183410">
+    <cvParam accession="MS:1001088" cvRef="PSI-MS" value="tr|Q9RS55|Q9RS55_DEIRA MutT/nudix family protein OS=Deinococcus radiodurans GN=DR_2272 PE=4 SV=1" name="protein description"/>
+  </DBSequence>
+  <Peptide id="Pep1">
+    <PeptideSequence>VVIYDGSYHEVDSSEMAFK</PeptideSequence>
+  </Peptide>
+  <Peptide id="Pep3181">
+    <PeptideSequence>RFQIGEVVLEGTGECHPCSR</PeptideSequence>
+    <Modification monoisotopicMassDelta="57.021463735" location="15">
+      <cvParam accession="UNIMOD:4" cvRef="UNIMOD" name="Carbamidomethyl"/>
+    </Modification>
+    <Modification monoisotopicMassDelta="57.021463735" location="18">
+      <cvParam accession="UNIMOD:4" cvRef="UNIMOD" name="Carbamidomethyl"/>
+    </Modification>
+  </Peptide>
+  <Peptide id="Pep3182">
+    <PeptideSequence>FFHWEGRERHEFGFFFR</PeptideSequence>
+  </Peptide>
+  <PeptideEvidence isDecoy="false" post="I" pre="K" end="591" start="573" peptide_ref="Pep1" dBSequence_ref="DBSeq30696" id="PepEv_31268_1_573"/>
+  <PeptideEvidence isDecoy="false" post="M" pre="R" end="151" start="132" peptide_ref="Pep3181" dBSequence_ref="DBSeq658964" id="PepEv_659095_3181_132"/>
+  <PeptideEvidence isDecoy="false" post="V" pre="R" end="115" start="99" peptide_ref="Pep3182" dBSequence_ref="DBSeq183410" id="PepEv_183508_3182_99"/>
 </SequenceCollection>
 <AnalysisCollection xmlns="http://psidev.info/psi/pi/mzIdentML/1.1">
     <SpectrumIdentification spectrumIdentificationList_ref="SI_LIST_1" spectrumIdentificationProtocol_ref="SearchProtocol_1" id="SpecIdent_1">

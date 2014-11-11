@@ -72,23 +72,26 @@ module MzID
     # handler for Peptide elements
     #
     class PeptideHandler < Ox::Sax
-      ATTR = [:Peptide, :PeptideSequence]
+      ATTR = [:Peptide, :PeptideSequence, :Modification]
       
       def initialize(num_pep=nil)
         @pbar = num_pep.nil? ? nil : ProgressBar.new("Peptides", num_pep)
         @pep_h = Hash.new
+        @mod_h = Hash.new
       end 
 
-      attr_accessor :pep_h, :pbar
+      attr_accessor :pep_h, :mod_h, :pbar
       #
       def start_element(name)
         @h = {} if name == :Peptide
+        @mh = [] if name == :Peptide
         @curr_node = name
       end
       #
       def attr(name, value)
         return unless ATTR.include?(@curr_node)
-        @h[name] = value
+        @h[name] = value if @curr_node != :Modification
+        @mh.push(value) if @curr_node == :Modification
       end
       #
       def text(value)
@@ -100,6 +103,12 @@ module MzID
         return unless name == :Peptide
         @pbar.inc if !@pbar.nil?
         @pep_h[@h[:id].to_sym] = @h[:PeptideSequence]
+        if !@mh.empty? then
+          @mod_h[@h[:id].to_sym] = {}
+          (1..@mh.size-1).step(2) do |i|
+            @mod_h[@h[:id].to_sym][@mh[i].to_i] = @mh[i-1]
+          end
+        end
       end 
     end
     #
@@ -217,6 +226,7 @@ module MzID
       File.open(@mzid_file){|f| Ox.sax_parse(pep_handler, f)}
       pep_handler.pbar.finish if !pep_handler.pbar.nil?
       @pep_h = pep_handler.pep_h
+      @mod_h = pep_handler.mod_h
       #
       # create/cache PeptideEvent elements
       pep_ev_handler = PeptideEventHandler.new(@dbseq_h, @use_pbar.nil? ? nil : count_handler.pepev_count)
@@ -228,9 +238,11 @@ module MzID
     #
     # write output to csv
     #
-    def write_to_csv(outfile="result.csv", num_spec=nil)
+    #def write_to_csv(outfile="result.csv", num_spec=nil)
+    def write_to_csv(outfile="result.csv", show_mods=true)
       CSV.open(outfile, "w", {:col_sep => "\t"}) do |csv|
         headerAry = ["#spec_num", "peptide", "spec_prob", "decoy", "prot_ids", "start", "end", "num_prot"]
+        headerAry.push("mods") if show_mods
         headerAry.delete("decoy") if !@tda_flag
         csv << headerAry
         
@@ -238,6 +250,7 @@ module MzID
           # peptide reference/seq
           pep_ref = spec_h[:peptide_ref].to_sym
           pep_seq = @pep_h[pep_ref]
+          mods = @mod_h[pep_ref]
           # peptide evidence list
           pep_ev_ref_lst = spec_h[:peptideEvidence_ref]
           # number of proteins with matching peptide
@@ -255,6 +268,14 @@ module MzID
             # write to file
             ary = [spec_h[:id], pep_seq, spec_h[:spec_prob], is_decoy, prot_id, start_pos, end_pos, num_prot]
             ary.delete_at(3) if !@tda_flag
+            if show_mods then
+              modstr = if !mods.nil? then
+                         mods.keys.map{|loc| val = mods[loc].to_i; [loc, val > 0 ? "+#{val}" : "-#{val}"].join(";")}.join("|")
+                       else
+                         nil
+                       end
+              ary.push(modstr)
+            end
             csv << ary
           end 
           

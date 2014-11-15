@@ -28,14 +28,17 @@ parser.each_psm do |spec_id|
 end
 ```
 
-alternatively, one can also specify a more memory-efficient parser for large files:
+alternatively, one can also specify a more memory-efficient parser for large files, 
+reformatting their output into an easily parsable csv file:
 
 ```ruby
-parser = MzID::StreamingParser("output.mzid")
+parser = MzID::ParserSax.new("output.mzid")
+parser.write_to_csv("output.csv")
 ```
 
 ###### Dependencies
 * nokogiri
+* ox
 * progressbar
 * minitest
 * minitest-reporters

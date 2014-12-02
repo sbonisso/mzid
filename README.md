@@ -15,6 +15,20 @@ gem build ./mzid.gemspec
 gem install mzid
 ```
 
+###### Usage
+
+A command line utility is provided to convert from mzid to csv, an example:
+
+```
+$ convert_mzid_to_csv.rb test.mzid -v -m 
+DBSeq:         100% |oooooooooooooooooooooooooooooooooooooooooooooooooooooooooo| Time:   0:00:01
+Peptides:      100% |oooooooooooooooooooooooooooooooooooooooooooooooooooooooooo| Time:   0:00:01
+PepEv:         100% |oooooooooooooooooooooooooooooooooooooooooooooooooooooooooo| Time:   0:00:01
+Spectra:       100% |oooooooooooooooooooooooooooooooooooooooooooooooooooooooooo| Time:   0:00:02
+```
+
+this results in a file named test.csv since one was not explicitly provided.
+
 ###### Example
 
 parsing the output of an mzid file can be done in a simple block:

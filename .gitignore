@@ -3,6 +3,7 @@
 *.fa
 *.txt
 *.mzid
+*.csv
 
 ## gem
 *.gem

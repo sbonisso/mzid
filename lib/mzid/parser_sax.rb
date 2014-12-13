@@ -4,7 +4,9 @@ require 'csv'
 
 module MzID
   #
-  # class to parse an mzIdentML file
+  # class to parse an mzIdentML file (.mzid) in a memory efficient manner.
+  # can parse large files that a DOM parser will fail on, e.g., most mzid 
+  # parsers. The caveat is that it must be written to a csv file.
   #
   class ParserSax
     #
@@ -236,9 +238,8 @@ module MzID
       
     end
     #
-    # write output to csv
+    # write output to specified csv file
     #
-    #def write_to_csv(outfile="result.csv", num_spec=nil)
     def write_to_csv(outfile="result.csv", show_mods=true)
       CSV.open(outfile, "w", {:col_sep => "\t"}) do |csv|
         headerAry = ["#spec_num", "peptide", "spec_prob", "decoy", "prot_ids", "start", "end", "num_prot"]

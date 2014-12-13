@@ -17,25 +17,41 @@ module MzID
       @pass_thresh = h.has_key?(:pass_threshold) ? h[:pass_threshold] : nil
     end
     #
+    #--
     # get methods
+    #++
     #
+    # get ID
     def get_id() @id end
+    # get peptide sequence
     def get_pep() @pep end
+    # get spectral probability
     def get_spec_prob() @spec_prob end
+    # get peptide reference
     def get_pep_ref() @peptide_ref end
+    # get spectrum reference
     def get_spec_ref() @spec_ref end
+    # get spectrum number
     def get_spec_num() @spec_num end
+    # get modifications
     def get_mods() @mods end
+    # get peptide evidence
     def get_pep_ev() @pep_evidence end
+    # get pass threshold flag
     def get_pass_threshold() @pass_thresh end
     #
+    #--
     # set methods
+    #++
     #
+    # set the peptide sequence
     def set_pep(pep) @pep = pep end
+    # set the spectral probability
     def set_spec_prob(prob) @spec_prob = prob end
-    #def set_pep_ev(pep_ev) @pep_evidence = pep_ev end
-    def add_pep_ev(pep_ev) @pep_evidence.nil? ? @pep_evidence = [pep_ev] : @pep_evidence.push(pep_ev) end
+    # set peptide
     def set_pep(pep_seq) @pep = pep_seq end
+    # add the peptide evidence
+    def add_pep_ev(pep_ev) @pep_evidence.nil? ? @pep_evidence = [pep_ev] : @pep_evidence.push(pep_ev) end    
     #
     # output PSM as string
     #

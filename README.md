@@ -3,6 +3,7 @@ mzid
 
 ruby parser library for mzIdentML files
 
+[![Gem Version](https://badge.fury.io/rb/mzid.svg)](http://badge.fury.io/rb/mzid)
 [![Build Status](https://travis-ci.org/sbonisso/mzid.png)](http://travis-ci.org/sbonisso/mzid)
 
 ###### Install

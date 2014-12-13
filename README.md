@@ -8,10 +8,6 @@ ruby parser library for mzIdentML files
 
 ###### Install
 
-``` ruby
-gem build ./mzid.gemspec
-```
-
 ```ruby
 gem install mzid
 ```
